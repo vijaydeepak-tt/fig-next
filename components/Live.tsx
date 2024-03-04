@@ -3,7 +3,6 @@ import {
   useBroadcastEvent,
   useEventListener,
   useMyPresence,
-  useOthers,
 } from '@/liveblocks.config';
 import LiveCursors from './cursor/LiveCursors';
 import { useCallback, useEffect, useState } from 'react';
@@ -12,7 +11,7 @@ import { CursorMode, CursorState, Reaction, ReactionEvent } from '@/types/type';
 import ReactionSelector from './reaction/ReactionButton';
 import FlyingReaction from './reaction/FlyingReaction';
 import useInterval from '@/hooks/useInterval';
-import { Comments } from './comments/Comments';
+// import { Comments } from './comments/Comments';
 import {
   ContextMenu,
   ContextMenuContent,
@@ -28,8 +27,7 @@ type Props = {
 };
 
 export default function Live({ canvasRef, undo, redo }: Props) {
-  const others = useOthers();
-  const [{ cursor }, updateMyPresence] = useMyPresence() as any;
+  const [{ cursor }, updateMyPresence] = useMyPresence();
   const [cursorState, setCursorState] = useState<CursorState>({
     mode: CursorMode.Hidden,
   });
@@ -46,7 +44,11 @@ export default function Live({ canvasRef, undo, redo }: Props) {
 
   // setting reaction to state in intervals
   useInterval(() => {
-    if (cursorState.mode === CursorMode.Reaction && cursorState.isPressed) {
+    if (
+      cursorState.mode === CursorMode.Reaction &&
+      cursorState.isPressed &&
+      cursor
+    ) {
       setReactions((prevReactions) =>
         prevReactions.concat([
           {
@@ -224,7 +226,7 @@ export default function Live({ canvasRef, undo, redo }: Props) {
           <ReactionSelector setReaction={setReaction} />
         )}
 
-        <LiveCursors others={others} />
+        <LiveCursors />
 
         {/* <Comments /> */}
       </ContextMenuTrigger>
